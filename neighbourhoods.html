@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Where to Actually Live</title>
+<meta name="description" content="Alanya's districts, ranked by what matters — population, expat density, and current ikamet eligibility. Real data, not vibes.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          crimson: '#C11119',
+          'crimson-deep': '#8F0C12',
+          ink: '#0C0C0C',
+          paper: '#FDFBF7'
+        },
+        fontFamily: {
+          display: ['Syne', 'sans-serif'],
+          body: ['Plus Jakarta Sans', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace']
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html{ scroll-behavior:smooth; overflow-x:hidden; }
+  body{ background:#C11119; overflow-x:hidden; }
+  ::selection{ background:#0C0C0C; color:#FDFBF7; }
+
+  .bleed-text{
+    font-family:'Syne', sans-serif;
+    font-weight:800;
+    line-height:0.82;
+    letter-spacing:-0.02em;
+    color:#FDFBF7;
+    word-break: break-word;
+  }
+  .bleed-outline{ -webkit-text-stroke: 1.5px #FDFBF7; color: transparent; }
+  .rule{ border-color: rgba(253,251,247,0.25); }
+
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#FDFBF7; opacity:0.5; }
+
+  .rail-link{ transition: transform 0.3s ease, background 0.3s ease; }
+  .rail-link:hover{ transform: scale(1.12); background:#FDFBF7; }
+  .rail-link:hover svg{ stroke:#C11119; }
+
+  .status-open{ background:#0C0C0C; color:#FDFBF7; }
+  .status-closed{ background:transparent; color:#FDFBF7; border:1.5px solid #FDFBF7; opacity:0.85; }
+
+  .district-card{ transition: transform 0.35s cubic-bezier(.16,1,.3,1); }
+  .district-card:hover{ transform: translateY(-4px); }
+
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:#8F0C12; }
+  ::-webkit-scrollbar-thumb{ background:#FDFBF7; border-radius:10px; }
+</style>
+</head>
+
+<body class="font-body text-paper antialiased">
+
+<div class="hidden lg:flex fixed right-5 md:right-8 top-1/2 -translate-y-1/2 z-50 flex-col gap-4">
+  <a href="https://instagram.com/projectalanya" target="_blank" rel="noopener"
+     class="rail-link w-11 h-11 rounded-full border border-paper/40 flex items-center justify-center" aria-label="Instagram">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDFBF7" stroke-width="1.8">
+      <rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="#FDFBF7" stroke="none"/>
+    </svg>
+  </a>
+  <a href="https://www.youtube.com/@projectalanya" target="_blank" rel="noopener"
+     class="rail-link w-11 h-11 rounded-full border border-paper/40 flex items-center justify-center" aria-label="YouTube">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDFBF7" stroke-width="1.8">
+      <rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9.5v5l4.5-2.5z" fill="#FDFBF7" stroke="none"/>
+    </svg>
+  </a>
+  <a href="https://tiktok.com/@projectalanya" target="_blank" rel="noopener"
+     class="rail-link w-11 h-11 rounded-full border border-paper/40 flex items-center justify-center" aria-label="TikTok">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FDFBF7" stroke="none">
+      <path d="M16.5 2h-3.2v13.9c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6 0 .9.1V9.8c-.3 0-.6-.1-.9-.1-3.4 0-6.1 2.7-6.1 6.1S7 22 10.4 22s6.1-2.7 6.1-6.1V8.4c1.2.9 2.7 1.4 4.3 1.4V6.6c-2.4 0-4.3-1.9-4.3-4.3V2z"/>
+    </svg>
+  </a>
+  <div class="h-14 w-px bg-paper/30 mx-auto"></div>
+</div>
+
+<header class="relative z-40">
+  <nav class="flex items-center justify-between px-6 md:px-12 py-7">
+    <a href="index.html" class="wordmark text-xl md:text-2xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+    <div class="hidden md:flex items-center gap-10 text-sm font-medium">
+      <a href="index.html#dashboard" class="hover:opacity-70 transition-opacity">Budget</a>
+      <a href="index.html#ground-truth" class="hover:opacity-70 transition-opacity">Ground Truth</a>
+      <a href="index.html#spots" class="hover:opacity-70 transition-opacity">Spots</a>
+      <a href="neighbourhoods.html" class="opacity-100 font-semibold">Live</a>
+    </div>
+    <button id="menuBtn" onclick="toggleMenu()" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-end gap-[6px]" aria-label="Open menu">
+      <span id="bar1" class="block h-[2px] w-8 bg-paper transition-all duration-300"></span>
+      <span id="bar2" class="block h-[2px] w-6 bg-paper transition-all duration-300"></span>
+    </button>
+  </nav>
+
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-ink md:hidden flex flex-col justify-center items-start px-8 gap-6 opacity-0 pointer-events-none transition-opacity duration-300">
+    <a href="index.html#dashboard" class="font-display text-[12vw] leading-none text-paper">Budget</a>
+    <a href="index.html#ground-truth" class="font-display text-[12vw] leading-none text-paper">Ground&nbsp;Truth</a>
+    <a href="index.html#spots" class="font-display text-[12vw] leading-none text-paper">Spots</a>
+    <a href="neighbourhoods.html" onclick="toggleMenu()" class="font-display text-[12vw] leading-none text-crimson">Live</a>
+  </div>
+</header>
+
+<script>
+  let menuOpen = false;
+  function toggleMenu(){
+    const menu = document.getElementById('mobileMenu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    menuOpen = !menuOpen;
+    if(menuOpen){
+      menu.classList.remove('opacity-0','pointer-events-none');
+      menu.classList.add('opacity-100');
+      bar1.style.transform = 'rotate(45deg) translate(1px,1px)';
+      bar2.style.transform = 'rotate(-45deg) translate(1px,-1px)';
+      bar2.style.width = '2rem';
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.add('opacity-0','pointer-events-none');
+      menu.classList.remove('opacity-100');
+      bar1.style.transform = '';
+      bar2.style.transform = '';
+      bar2.style.width = '';
+      document.body.style.overflow = '';
+    }
+  }
+</script>
+
+<!-- HERO -->
+<section class="relative px-6 md:px-12 pt-6 pb-24 overflow-hidden">
+  <div class="max-w-[1400px] mx-auto relative">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/70 mb-6">Alanya, district by district</p>
+    <h1 class="bleed-text text-[11vw] md:text-[7.5vw] select-none">WHERE TO</h1>
+    <h1 class="bleed-text bleed-outline text-[11vw] md:text-[7.5vw] -mt-[2vw] md:-mt-[1.5vw] ml-0 md:ml-[12vw] select-none">ACTUALLY LIVE</h1>
+
+    <div class="mt-10 md:mt-4 md:ml-[12vw] max-w-[420px] relative z-10">
+      <p class="text-lg md:text-xl font-light leading-relaxed text-paper/90">
+        Population, expat density, and current ikamet eligibility — the thing
+        most "best areas" guides leave out entirely. Status changes without
+        warning; this is a starting map, not a guarantee.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- DISTRICT GRID -->
+<section class="px-6 md:px-12 py-16 border-t rule">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="district-card bg-paper text-ink border-2 border-ink p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Mahmutlar</h2>
+          <span class="status-closed font-mono text-[10px] uppercase tracking-wider px-2.5 py-1">Ikamet closed</span>
+        </div>
+        <p class="font-mono text-[11px] text-ink/50 uppercase tracking-wider mb-3">~53,000 residents · ~12,000 expats</p>
+        <p class="text-sm text-ink/70 leading-relaxed">Alanya's largest and most international district — strong Northern European and post-Soviet community, full infrastructure. Currently closed to new foreign residency registrations; you can still buy here, but a permit application will be refused.</p>
+      </div>
+
+      <div class="district-card bg-ink border-2 border-paper p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Oba</h2>
+          <span class="status-open font-mono text-[10px] uppercase tracking-wider px-2.5 py-1">Ikamet open</span>
+        </div>
+        <p class="font-mono text-[11px] text-paper/50 uppercase tracking-wider mb-3">~28,000 residents</p>
+        <p class="text-sm text-paper/70 leading-relaxed">Close to the centre, tree-lined, family-oriented. One of the more "Europeanised" districts with a strong CIS and European presence. Open for now — some sources place it near the threshold, so don't assume that status is permanent.</p>
+      </div>
+
+      <div class="district-card bg-paper text-ink border-2 border-ink p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Kestel</h2>
+          <span class="status-open font-mono text-[10px] uppercase tracking-wider px-2.5 py-1 !bg-ink !text-paper">Ikamet open</span>
+        </div>
+        <p class="font-mono text-[11px] text-ink/50 uppercase tracking-wider mb-3">~12,000–15,000 residents</p>
+        <p class="text-sm text-ink/70 leading-relaxed">Quieter, more local in feel, between the centre and Mahmutlar. Popular for retirement and orange-grove views rather than nightlife.</p>
+      </div>
+
+      <div class="district-card bg-ink border-2 border-paper p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Kargıcak</h2>
+          <span class="status-closed font-mono text-[10px] uppercase tracking-wider px-2.5 py-1">Ikamet closed</span>
+        </div>
+        <p class="font-mono text-[11px] text-paper/50 uppercase tracking-wider mb-3">Smaller, plantation belt</p>
+        <p class="text-sm text-paper/70 leading-relaxed">Banana and orange plantations, luxury hotel developments, a quieter atmosphere than Mahmutlar. Currently closed to new foreign registrations.</p>
+      </div>
+
+      <div class="district-card bg-paper text-ink border-2 border-ink p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Avsallar</h2>
+          <span class="status-closed font-mono text-[10px] uppercase tracking-wider px-2.5 py-1">Ikamet closed</span>
+        </div>
+        <p class="font-mono text-[11px] text-ink/50 uppercase tracking-wider mb-3">Beach-resort character</p>
+        <p class="text-sm text-ink/70 leading-relaxed">Built around İncekum beach, resort pace, strong summer rental demand. Closed to new foreign registrations — buying is still possible, residency isn't.</p>
+      </div>
+
+      <div class="district-card bg-ink border-2 border-paper p-7">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="font-display font-800 text-2xl">Demirtaş</h2>
+          <span class="status-open font-mono text-[10px] uppercase tracking-wider px-2.5 py-1 !bg-paper !text-ink">Ikamet open</span>
+        </div>
+        <p class="font-mono text-[11px] text-paper/50 uppercase tracking-wider mb-3">~3,000 residents</p>
+        <p class="text-sm text-paper/70 leading-relaxed">Alanya's smallest and least developed main district. Cheapest entry point, least infrastructure — a genuine trade-off, not a hidden gem.</p>
+      </div>
+
+    </div>
+
+    <div class="mt-14 max-w-2xl">
+      <div class="border-2 border-paper p-6 md:p-8">
+        <p class="font-mono text-[11px] uppercase tracking-wider text-crimson mb-2">Status changes without notice</p>
+        <p class="text-sm text-paper/80 leading-relaxed">Ikamet eligibility is based on a neighbourhood's share of registered foreign residents crossing a legal threshold — and Göç İdaresi can close a district the moment that line is crossed, with no advance public warning. Districts have also reopened in 2026 after previously being closed. Treat every status above as "true as of when this was last checked," and confirm directly on e-ikamet before signing a lease or buying.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="px-6 md:px-12 py-8 border-t rule flex flex-col md:flex-row justify-between gap-3 font-mono text-[11px] text-paper/50">
+  <span>© 2026 projectalanya. All rights reserved. <a href="mailto:hello@projectalanya.com" class="text-paper/70 hover:text-paper underline underline-offset-2">hello@projectalanya.com</a></span>
+  <span>Not a relocation agency. Verify residency, tax and currency details independently before acting on them.</span>
+</footer>
+
+</body>
+</html>
