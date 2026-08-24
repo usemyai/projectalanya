@@ -31,8 +31,8 @@
 </script>
 
 <style>
-  html{ scroll-behavior:smooth; }
-  body{ background:#C11119; }
+  html{ scroll-behavior:smooth; overflow-x:hidden; }
+  body{ background:#C11119; overflow-x:hidden; }
   ::selection{ background:#0C0C0C; color:#FDFBF7; }
 
   .bleed-text{
@@ -41,6 +41,7 @@
     line-height:0.82;
     letter-spacing:-0.02em;
     color:#FDFBF7;
+    word-break: break-word;
   }
   .bleed-outline{ -webkit-text-stroke: 1.5px #FDFBF7; color: transparent; }
 
@@ -81,7 +82,22 @@
   ::-webkit-scrollbar{ width:10px; }
   ::-webkit-scrollbar-track{ background:#8F0C12; }
   ::-webkit-scrollbar-thumb{ background:#FDFBF7; border-radius:10px; }
+
+  /* MailerLite embedded form — override their default styling so it
+     matches the site's raw-border, mono-label aesthetic instead of
+     looking like a bolted-on widget. */
+  .ml-embedded{ width:100%; max-width:32rem; }
 </style>
+
+<!-- MailerLite Universal -->
+<script>
+    (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+    .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+    n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n)})
+    (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+    ml('account', '2443322');
+</script>
+<!-- End MailerLite Universal -->
 </head>
 
 <body class="font-body text-paper antialiased">
@@ -114,12 +130,52 @@
 <!-- NAV — lowercase, tech-product wordmark -->
 <header class="relative z-40">
   <nav class="flex items-center justify-between px-6 md:px-12 py-7">
-    <div class="wordmark text-xl md:text-2xl">project<span class="dot">·</span>alanya</div>
+    <a href="index.html" class="wordmark text-xl md:text-2xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
     <div class="hidden md:flex items-center gap-10 text-sm font-medium">
       <a href="#dashboard" class="hover:opacity-70 transition-opacity">Budget</a>
       <a href="#ground-truth" class="hover:opacity-70 transition-opacity">Ground Truth</a>
       <a href="#spots" class="hover:opacity-70 transition-opacity">Spots</a>
+      <a href="neighbourhoods.html" class="hover:opacity-70 transition-opacity">Live</a>
     </div>
+    <button id="menuBtn" onclick="toggleMenu()" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-end gap-[6px]" aria-label="Open menu">
+      <span id="bar1" class="block h-[2px] w-8 bg-paper transition-all duration-300"></span>
+      <span id="bar2" class="block h-[2px] w-6 bg-paper transition-all duration-300"></span>
+    </button>
+  </nav>
+
+  <!-- FULL-SCREEN MOBILE MENU -->
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-ink md:hidden flex flex-col justify-center items-start px-8 gap-6 opacity-0 pointer-events-none transition-opacity duration-300">
+    <a href="#dashboard" onclick="toggleMenu()" class="font-display text-[12vw] leading-none text-paper">Budget</a>
+    <a href="#ground-truth" onclick="toggleMenu()" class="font-display text-[12vw] leading-none text-paper">Ground&nbsp;Truth</a>
+    <a href="#spots" onclick="toggleMenu()" class="font-display text-[12vw] leading-none text-paper">Spots</a>
+    <a href="neighbourhoods.html" class="font-display text-[12vw] leading-none text-crimson">Live</a>
+  </div>
+</header>
+
+<script>
+  let menuOpen = false;
+  function toggleMenu(){
+    const menu = document.getElementById('mobileMenu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    menuOpen = !menuOpen;
+    if(menuOpen){
+      menu.classList.remove('opacity-0','pointer-events-none');
+      menu.classList.add('opacity-100');
+      bar1.style.transform = 'rotate(45deg) translate(1px,1px)';
+      bar2.style.transform = 'rotate(-45deg) translate(1px,-1px)';
+      bar2.style.width = '2rem';
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.add('opacity-0','pointer-events-none');
+      menu.classList.remove('opacity-100');
+      bar1.style.transform = '';
+      bar2.style.transform = '';
+      bar2.style.width = '';
+      document.body.style.overflow = '';
+    }
+  }
+</script>
   </nav>
 </header>
 
@@ -128,8 +184,8 @@
   <div class="max-w-[1400px] mx-auto relative">
     <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/70 mb-6">36.5478° N · 32.0000° E — Turkish Riviera</p>
 
-    <h1 class="bleed-text text-[15vw] md:text-[8.5vw] select-none">BUILD</h1>
-    <h1 class="bleed-text bleed-outline text-[15vw] md:text-[8.5vw] -mt-[3vw] md:-mt-[1.5vw] ml-[10vw] md:ml-[16vw] select-none">HERE</h1>
+    <h1 class="bleed-text text-[13vw] md:text-[8.5vw] select-none">BUILD</h1>
+    <h1 class="bleed-text bleed-outline text-[13vw] md:text-[8.5vw] -mt-[2vw] md:-mt-[1.5vw] ml-0 md:ml-[16vw] select-none">HERE</h1>
 
     <div class="mt-10 md:mt-4 md:ml-[16vw] max-w-[360px] relative z-10">
       <p class="text-lg md:text-xl font-light leading-relaxed text-paper/90">
@@ -260,14 +316,23 @@
     <p class="font-display font-700 text-2xl md:text-3xl leading-tight max-w-xl mb-8">
       Get the raw text files as the data updates. Unfiltered ground truths only.
     </p>
-    <form class="flex flex-col sm:flex-row gap-3 max-w-lg" onsubmit="return false;">
-      <input type="email" required placeholder="you@email.com"
-             class="dash-input flex-1 bg-ink/5 border-2 border-ink/15 focus:border-ink px-4 py-3 font-mono text-sm">
-      <button type="submit"
-              class="bg-ink text-paper font-mono text-xs uppercase tracking-[0.15em] px-6 py-3 hover:bg-crimson transition-colors">
-        Subscribe
-      </button>
-    </form>
+    <div class="ml-embedded" data-form="jtlFQO"></div>
+  </div>
+</section>
+
+<!-- NEIGHBOURHOODS TEASER — links through to the dedicated page rather
+     than duplicating that content here. -->
+<section class="px-6 md:px-12 py-20 border-t rule">
+  <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+    <div class="max-w-xl">
+      <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/60 mb-4">District by district</p>
+      <h2 class="font-display font-800 text-4xl md:text-5xl leading-[0.95] mb-4">Where you can actually get residency</h2>
+      <p class="text-paper/70 leading-relaxed">Population, expat density, and current ikamet eligibility per district — the thing most "best areas" guides skip.</p>
+    </div>
+    <a href="neighbourhoods.html" class="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] group shrink-0">
+      <span class="w-10 h-10 rounded-full bg-paper text-crimson flex items-center justify-center group-hover:bg-ink group-hover:text-paper transition-colors">→</span>
+      See the full map
+    </a>
   </div>
 </section>
 
@@ -320,7 +385,7 @@
 <!-- CLOSING / CONNECT -->
 <section class="px-6 md:px-12 pt-20 pb-28 border-t rule text-center">
   <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/60 mb-6">Follow the build</p>
-  <h2 class="font-display font-800 text-[13vw] md:text-[7vw] leading-[0.85] mb-10">SEE IT<br>FOR YOURSELF</h2>
+  <h2 class="font-display font-800 text-[10vw] md:text-[7vw] leading-[0.85] mb-10 break-words">SEE IT<br>FOR YOURSELF</h2>
   <div class="flex items-center justify-center gap-5">
     <a href="https://instagram.com/projectalanya" target="_blank" rel="noopener" class="rail-link w-12 h-12 rounded-full border border-paper/40 flex items-center justify-center" aria-label="Instagram">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FDFBF7" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="#FDFBF7" stroke="none"/></svg>
