@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Kestel</title>
+<meta name="description" content="~12,000–15,000 residents — Kestel, Alanya. Real notes, not a brochure.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          crimson: '#C11119',
+          'crimson-deep': '#8F0C12',
+          ink: '#0C0C0C',
+          paper: '#FDFBF7'
+        },
+        fontFamily: {
+          display: ['Syne', 'sans-serif'],
+          body: ['Plus Jakarta Sans', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace']
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html{ scroll-behavior:smooth; overflow-x:hidden; }
+  body{ background:#C11119; overflow-x:hidden; }
+  ::selection{ background:#0C0C0C; color:#FDFBF7; }
+
+  .bleed-text{
+    font-family:'Syne', sans-serif;
+    font-weight:800;
+    line-height:0.82;
+    letter-spacing:-0.02em;
+    color:#FDFBF7;
+    word-break: break-word;
+  }
+  .rule{ border-color: rgba(253,251,247,0.25); }
+
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#FDFBF7; opacity:0.5; }
+
+  .status-open{ background:#0C0C0C; color:#FDFBF7; }
+  .status-closed{ background:transparent; color:#FDFBF7; border:1.5px solid #FDFBF7; opacity:0.85; }
+
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:#8F0C12; }
+  ::-webkit-scrollbar-thumb{ background:#FDFBF7; border-radius:10px; }
+</style>
+</head>
+
+<body class="font-body text-paper antialiased">
+
+<header class="sticky top-0 z-40 bg-crimson">
+  <nav class="flex items-center justify-between px-6 md:px-12 py-7">
+    <a href="index.html" class="wordmark text-xl md:text-2xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+    <div class="hidden md:flex items-center gap-10 text-sm font-medium">
+      <a href="index.html#dashboard" class="hover:opacity-70 transition-opacity">Budget</a>
+      <a href="index.html#ground-truth" class="hover:opacity-70 transition-opacity">Ground Truth</a>
+      <a href="index.html#spots" class="hover:opacity-70 transition-opacity">Spots</a>
+      <a href="neighbourhoods.html" class="hover:opacity-70 transition-opacity">Live</a>
+    </div>
+    <button id="menuBtn" onclick="toggleMenu()" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-end gap-[6px]" aria-label="Open menu">
+      <span id="bar1" class="block h-[2px] w-8 bg-paper transition-all duration-300"></span>
+      <span id="bar2" class="block h-[2px] w-6 bg-paper transition-all duration-300"></span>
+    </button>
+  </nav>
+
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-ink md:hidden flex flex-col justify-center items-start px-8 gap-5 opacity-0 pointer-events-none transition-opacity duration-300">
+    <a href="index.html#dashboard" class="font-display text-[9vw] leading-none text-paper break-words">Budget</a>
+    <a href="index.html#ground-truth" class="font-display text-[9vw] leading-none text-paper break-words">Ground Truth</a>
+    <a href="index.html#spots" class="font-display text-[9vw] leading-none text-paper break-words">Spots</a>
+    <a href="neighbourhoods.html" onclick="toggleMenu()" class="font-display text-[9vw] leading-none text-crimson break-words">Live</a>
+  </div>
+</header>
+
+<script>
+  let menuOpen = false;
+  function toggleMenu(){
+    const menu = document.getElementById('mobileMenu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    menuOpen = !menuOpen;
+    if(menuOpen){
+      menu.classList.remove('opacity-0','pointer-events-none');
+      menu.classList.add('opacity-100');
+      bar1.style.transform = 'rotate(45deg) translate(1px,1px)';
+      bar2.style.transform = 'rotate(-45deg) translate(1px,-1px)';
+      bar2.style.width = '2rem';
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.add('opacity-0','pointer-events-none');
+      menu.classList.remove('opacity-100');
+      bar1.style.transform = '';
+      bar2.style.transform = '';
+      bar2.style.width = '';
+      document.body.style.overflow = '';
+    }
+  }
+</script>
+
+<!-- BACK LINK -->
+<div class="px-6 md:px-12 pt-8">
+  <a href="neighbourhoods.html" class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-paper/60 hover:text-paper transition-colors">
+    ← All districts
+  </a>
+</div>
+
+<!-- HERO -->
+<section class="relative px-6 md:px-12 pt-6 pb-16">
+  <div class="max-w-[900px] mx-auto">
+    <div class="flex items-start justify-between gap-4 mb-6">
+      <h1 class="bleed-text text-[13vw] md:text-[6vw] break-words">Kestel</h1>
+      <span class="status-open font-mono text-[11px] uppercase tracking-wider px-3 py-1.5 shrink-0 mt-3">Ikamet open</span>
+    </div>
+    <p class="font-mono text-xs uppercase tracking-wider text-paper/50 mb-6">~12,000–15,000 residents</p>
+    <p class="text-lg leading-relaxed text-paper/85 max-w-2xl">Quieter, more local in feel, between the centre and Mahmutlar. Popular for retirement and orange-grove views rather than nightlife.</p>
+  </div>
+</section>
+
+<!-- IMAGE -->
+<section class="px-6 md:px-12 pb-16">
+  <div class="max-w-[900px] mx-auto">
+    <div class="w-full aspect-[16/9] border-2 border-paper/30 flex items-center justify-center bg-ink/20">
+      <p class="font-mono text-xs uppercase tracking-wider text-paper/40 text-center px-6">[Add a real photo of Kestel here — same filename pattern as mosque-oba.jpg]</p>
+    </div>
+  </div>
+</section>
+
+<!-- WRITE-UP -->
+<section class="px-6 md:px-12 py-16 border-t rule bg-paper text-ink">
+  <div class="max-w-2xl mx-auto space-y-8 text-base leading-relaxed">
+    <div>
+      <h3 class="font-display font-800 text-lg mb-2">The area itself</h3>
+      <p class="text-ink/70">[Your own honest take on Kestel — what it's actually like day to day, who you see there, how it compares to the other districts.]</p>
+    </div>
+    <div>
+      <h3 class="font-display font-800 text-lg mb-2">Food worth going to</h3>
+      <p class="text-ink/70">[Genuine recommendations, not a copied list — the places you'd actually send someone to.]</p>
+    </div>
+    <div>
+      <h3 class="font-display font-800 text-lg mb-2">Getting around</h3>
+      <p class="text-ink/70">[Whatever's actually useful — dolmuş routes, walkability, what's nearby vs what needs a drive.]</p>
+    </div>
+  </div>
+</section>
+
+<footer class="px-6 md:px-12 py-8 border-t rule flex flex-col md:flex-row justify-between gap-3 font-mono text-[11px] text-paper/50">
+  <span>© 2026 projectalanya. All rights reserved. <a href="mailto:hello@projectalanya.com" class="text-paper/70 hover:text-paper underline underline-offset-2">hello@projectalanya.com</a></span>
+  <span>Not a relocation agency. Verify residency, tax and currency details independently before acting on them.</span>
+</footer>
+
+</body>
+</html>
