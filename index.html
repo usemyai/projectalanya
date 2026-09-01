@@ -135,7 +135,7 @@
       <a href="#dashboard" class="hover:opacity-70 transition-opacity">Budget</a>
       <a href="#ground-truth" class="hover:opacity-70 transition-opacity">Ground Truth</a>
       <a href="#spots" class="hover:opacity-70 transition-opacity">Spots</a>
-      <a href="neighbourhoods.html" class="hover:opacity-70 transition-opacity">Live</a>
+      <a href="neighbourhoods.html" class="hover:opacity-70 transition-opacity">Districts</a>
     </div>
     <button id="menuBtn" onclick="toggleMenu()" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-end gap-[6px]" aria-label="Open menu">
       <span id="bar1" class="block h-[2px] w-8 bg-paper transition-all duration-300"></span>
@@ -148,7 +148,7 @@
     <a href="#dashboard" onclick="toggleMenu()" class="font-display text-[9vw] leading-none text-paper break-words">Budget</a>
     <a href="#ground-truth" onclick="toggleMenu()" class="font-display text-[9vw] leading-none text-paper break-words">Ground Truth</a>
     <a href="#spots" onclick="toggleMenu()" class="font-display text-[9vw] leading-none text-paper break-words">Spots</a>
-    <a href="neighbourhoods.html" class="font-display text-[9vw] leading-none text-crimson break-words">Live</a>
+    <a href="neighbourhoods.html" class="font-display text-[9vw] leading-none text-crimson break-words">Districts</a>
   </div>
 </header>
 
@@ -321,19 +321,19 @@
 </section>
 
 <!-- NEIGHBOURHOODS TEASER — links through to the dedicated page rather
-     than duplicating that content here. -->
+     than duplicating that content here. Whole block is clickable. -->
 <section class="px-6 md:px-12 py-20 border-t rule">
-  <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+  <a href="neighbourhoods.html" class="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-8 group">
     <div class="max-w-xl">
       <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/60 mb-4">District by district</p>
-      <h2 class="font-display font-800 text-4xl md:text-5xl leading-[0.95] mb-4">Where you can actually get residency</h2>
+      <h2 class="font-display font-800 text-4xl md:text-5xl leading-[0.95] mb-4 group-hover:text-crimson transition-colors">Where you can actually get residency</h2>
       <p class="text-paper/70 leading-relaxed">Population, expat density, and current ikamet eligibility per district — the thing most "best areas" guides skip.</p>
     </div>
-    <a href="neighbourhoods.html" class="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] group shrink-0">
+    <span class="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] shrink-0">
       <span class="w-10 h-10 rounded-full bg-paper text-crimson flex items-center justify-center group-hover:bg-ink group-hover:text-paper transition-colors">→</span>
       See the full map
-    </a>
-  </div>
+    </span>
+  </a>
 </section>
 
 <!-- LOCAL SPOTS — staggered, unaligned rows with oversized index numbers
@@ -372,11 +372,11 @@
         <span class="spot-arrow font-mono text-sm">Open in Maps →</span>
       </a>
 
-      <a href="https://www.google.com/maps/search/?api=1&query=Mahmutlar+Alanya" target="_blank" rel="noopener"
+      <a href="neighbourhoods.html#mahmutlar"
          class="spot-row relative flex items-center justify-between py-8 border-b-2 border-paper/30 group md:pl-2">
         <span class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 font-display font-800 text-[5vw] leading-none text-paper/10 select-none">05</span>
         <div class="md:ml-28"><p class="font-display font-700 text-xl md:text-2xl">Mahmutlar</p><p class="font-mono text-xs text-paper/50 mt-1">The strongest international community outside the centre</p></div>
-        <span class="spot-arrow font-mono text-sm">Open in Maps →</span>
+        <span class="spot-arrow font-mono text-sm">See district details →</span>
       </a>
     </div>
   </div>
