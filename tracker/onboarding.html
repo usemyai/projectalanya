@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Tracker Onboarding</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { crimson: '#C11119', ink: '#0C0C0C', paper: '#FDFBF7' },
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Plus Jakarta Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }}
+  }
+</script>
+<style>
+  body{ background:#FDFBF7; }
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#C11119; opacity:0.6; }
+  .opt-row.checked{ border-color:#C11119; }
+  .opt-box.checked{ background:#0C0C0C; }
+</style>
+</head>
+<body class="font-body text-ink antialiased min-h-screen flex flex-col">
+
+<header class="px-6 md:px-12 py-7">
+  <a href="../index.html" class="wordmark text-xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+</header>
+
+<main class="flex-1 flex items-center justify-center px-6 pb-20">
+  <div class="w-full max-w-md">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-crimson mb-3">Step 1 of 1</p>
+    <h1 class="font-display font-800 text-3xl mb-2">What's already sorted?</h1>
+    <p class="text-ink/60 mb-8">Tick anything that's already done — your dashboard skips it.</p>
+
+    <div id="opts" class="space-y-3 mb-8"></div>
+
+    <button id="continueBtn"
+            class="w-full bg-ink text-paper font-mono text-xs uppercase tracking-[0.2em] px-6 py-4 hover:bg-crimson transition-colors">
+      Build my dashboard
+    </button>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://teebttgkvyjvdhpimjui.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZWJ0dGdrdnlqdmRocGltanVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjYxMzIsImV4cCI6MjEwMzk0MjEzMn0.p8P5iEeeWjZ-NC0Ovu-jkRz0wIAgOLL1s6iHLv8V5Mc';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const options = [
+    { key: 'owns_property', label: 'I already own property in Turkey (Tapu)' },
+    { key: 'has_bank_account', label: 'I already have a Turkish bank account' },
+    { key: 'started_ikamet', label: "I've started my ikamet application" },
+    { key: 'arranged_moving', label: "I've arranged moving my belongings" }
+  ];
+  const checked = {};
+  options.forEach(o => checked[o.key] = false);
+
+  const wrap = document.getElementById('opts');
+  options.forEach(opt => {
+    const row = document.createElement('div');
+    row.className = 'opt-row flex items-center gap-3 p-4 border-2 border-ink/20 cursor-pointer transition-colors';
+    row.innerHTML = `
+      <div class="opt-box w-5 h-5 border-2 border-ink flex items-center justify-center shrink-0"></div>
+      <span class="text-sm">${opt.label}</span>
+    `;
+    row.addEventListener('click', () => {
+      checked[opt.key] = !checked[opt.key];
+      row.classList.toggle('checked', checked[opt.key]);
+      row.querySelector('.opt-box').classList.toggle('checked', checked[opt.key]);
+      row.querySelector('.opt-box').innerHTML = checked[opt.key]
+        ? '<span style="color:#FDFBF7;font-size:12px;">✓</span>' : '';
+    });
+    wrap.appendChild(row);
+  });
+
+  // Guard: must be logged in to reach this page
+  let currentUser = null;
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!session) {
+      window.location.href = 'login.html';
+    } else {
+      currentUser = session.user;
+    }
+  });
+
+  document.getElementById('continueBtn').addEventListener('click', async () => {
+    if (!currentUser) return;
+    const btn = document.getElementById('continueBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const { error } = await supabase.from('profiles').insert({
+      id: currentUser.id,
+      owns_property: checked.owns_property,
+      has_bank_account: checked.has_bank_account,
+      started_ikamet: checked.started_ikamet,
+      arranged_moving: checked.arranged_moving
+    });
+
+    if (error) {
+      alert('Something went wrong saving your answers: ' + error.message);
+      btn.disabled = false;
+      btn.textContent = 'Build my dashboard';
+      return;
+    }
+    window.location.href = 'dashboard.html';
+  });
+</script>
+
+</body>
+</html>
