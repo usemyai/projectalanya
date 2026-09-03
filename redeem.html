@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redeem your Relocation Tracker — Project Alanya</title>
+<style>
+  @font-face {
+    font-family: 'Serif Display';
+    src: local('Georgia');
+  }
+  :root {
+    --crimson: #C41230;
+    --ink: #141414;
+    --paper: #ffffff;
+    --grey: #6b6b6b;
+    --line: #e8e2df;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .band {
+    background: var(--crimson);
+    color: var(--paper);
+    padding: 48px 24px 40px;
+  }
+  .band .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin: 0 0 12px;
+  }
+  .band h1 {
+    font-size: 34px;
+    line-height: 1.15;
+    margin: 0;
+    max-width: 480px;
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  p.lead {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 32px;
+  }
+  label {
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .field { margin-bottom: 22px; }
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 14px;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  input:focus {
+    outline: 2px solid var(--crimson);
+    outline-offset: 1px;
+  }
+  button {
+    width: 100%;
+    padding: 15px 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--crimson);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  button:disabled {
+    background: #d98a97;
+    cursor: not-allowed;
+  }
+  .status {
+    margin-top: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.error { color: var(--crimson); }
+  .status.success { color: #1a7a3c; }
+  .rule {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 32px 0;
+  }
+  .hint {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <p class="kicker">PROJECT ALANYA</p>
+  <h1>Redeem your Relocation Tracker</h1>
+</div>
+
+<main>
+  <p class="lead">Enter the email you paid with and the licence key from your receipt to unlock your tracker.</p>
+
+  <form id="redeemForm">
+    <div class="field">
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+    </div>
+
+    <div class="field">
+      <label for="licenceKey">Licence key</label>
+      <input type="text" id="licenceKey" name="licenceKey" required autocomplete="off" placeholder="Paste your licence key">
+    </div>
+
+    <button type="submit" id="submitBtn">Unlock my tracker</button>
+
+    <div class="status" id="status"></div>
+  </form>
+
+  <hr class="rule">
+
+  <p class="hint">Can't find your key? Check the confirmation email from LemonSqueezy, or the receipt page you saw right after paying. If you still can't find it, email hello@projectalanya.com.</p>
+</main>
+
+<script>
+  // Point this at your Cloudflare Worker endpoint once it's deployed.
+  const REDEEM_ENDPOINT = "https://projectalanya-redeem.YOUR-SUBDOMAIN.workers.dev/redeem";
+
+  const form = document.getElementById('redeemForm');
+  const statusEl = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const licenceKey = document.getElementById('licenceKey').value.trim();
+
+    statusEl.className = 'status';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Checking...';
+
+    try {
+      const res = await fetch(REDEEM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, licenceKey })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        statusEl.className = 'status show success';
+        statusEl.textContent = data.message || 'You\'re in. Check your email for a link to sign in to your tracker.';
+        form.reset();
+      } else {
+        statusEl.className = 'status show error';
+        statusEl.textContent = data.message || 'That licence key didn\'t check out. Double check it and try again.';
+      }
+    } catch (err) {
+      statusEl.className = 'status show error';
+      statusEl.textContent = 'Something went wrong on our end. Please try again in a moment.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Unlock my tracker';
+    }
+  });
+</script>
+
+</body>
+</html>
