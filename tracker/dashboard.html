@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Tracker Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { crimson: '#C11119', ink: '#0C0C0C', paper: '#FDFBF7' },
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Plus Jakarta Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }}
+  }
+</script>
+<style>
+  body{ background:#FDFBF7; }
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#C11119; opacity:0.6; }
+  .item-row.done .item-check{ background:#0C0C0C; }
+  .item-row.done .item-label{ text-decoration:line-through; opacity:0.5; }
+</style>
+</head>
+<body class="font-body text-ink antialiased min-h-screen">
+
+<header class="sticky top-0 z-30 bg-paper border-b-2 border-ink/10 px-6 md:px-12 py-5 flex items-center justify-between">
+  <a href="../index.html" class="wordmark text-lg hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+  <button id="logoutBtn" class="font-mono text-[11px] uppercase tracking-wider text-ink/50 hover:text-ink transition-colors">Log out</button>
+</header>
+
+<main class="max-w-3xl mx-auto px-6 md:px-12 py-10">
+  <p class="font-mono text-xs tracking-[0.3em] uppercase text-crimson mb-2">Your tracker</p>
+  <div class="flex items-baseline justify-between mb-2">
+    <h1 class="font-display font-800 text-2xl">Overall progress</h1>
+    <span id="pctLabel" class="font-display font-800 text-2xl">0%</span>
+  </div>
+  <div class="h-2 bg-ink/10 mb-10">
+    <div id="progressBar" class="h-full bg-crimson transition-all duration-500" style="width:0%"></div>
+  </div>
+
+  <div id="stagesWrap" class="space-y-8">
+    <p class="text-ink/50 font-mono text-sm">Loading your dashboard…</p>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://teebttgkvyjvdhpimjui.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZWJ0dGdrdnlqdmRocGltanVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjYxMzIsImV4cCI6MjEwMzk0MjEzMn0.p8P5iEeeWjZ-NC0Ovu-jkRz0wIAgOLL1s6iHLv8V5Mc';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+  let profile = null;
+  let allItemsFlat = [];
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = 'login.html';
+  });
+
+  init();
+
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    currentUser = session.user;
+
+    const { data: profileData } = await supabase
+      .from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+
+    if (!profileData) { window.location.href = 'onboarding.html'; return; }
+    profile = profileData;
+
+    await loadDashboard();
+  }
+
+  async function loadDashboard() {
+    const { data: stages } = await supabase
+      .from('stages').select('*').order('sort_order');
+
+    const { data: items } = await supabase
+      .from('checklist_items').select('*').order('sort_order');
+
+    const { data: progressRows } = await supabase
+      .from('user_progress').select('item_id, completed').eq('user_id', currentUser.id);
+
+    const progressMap = {};
+    (progressRows || []).forEach(r => progressMap[r.item_id] = r.completed);
+
+    const wrap = document.getElementById('stagesWrap');
+    wrap.innerHTML = '';
+    allItemsFlat = [];
+
+    stages.forEach(stage => {
+      const stageItems = items.filter(i => i.stage_id === stage.id).filter(i => {
+        if (i.skip_if_owns_property && profile.owns_property) return false;
+        if (i.skip_if_has_bank_account && profile.has_bank_account) return false;
+        if (i.skip_if_arranged_moving && profile.arranged_moving) return false;
+        return true;
+      });
+
+      if (stageItems.length === 0) return;
+
+      stageItems.forEach(i => allItemsFlat.push(i));
+
+      const doneCount = stageItems.filter(i => progressMap[i.id]).length;
+
+      const section = document.createElement('section');
+      section.innerHTML = `
+        <div class="flex items-baseline justify-between mb-3">
+          <h2 class="font-display font-800 text-xl">${stage.name}</h2>
+          <span class="stage-count font-mono text-xs text-ink/50">${doneCount}/${stageItems.length}</span>
+        </div>
+        <div class="space-y-2" data-stage-items></div>
+      `;
+      const itemsWrap = section.querySelector('[data-stage-items]');
+
+      stageItems.forEach(item => {
+        const done = !!progressMap[item.id];
+        const row = document.createElement('div');
+        row.className = `item-row flex items-center gap-3 p-3 border-2 border-ink/15 cursor-pointer transition-colors ${done ? 'done' : ''}`;
+        row.innerHTML = `
+          <div class="item-check w-5 h-5 border-2 border-ink flex items-center justify-center shrink-0">${done ? '<span style="color:#FDFBF7;font-size:11px;">✓</span>' : ''}</div>
+          <span class="item-label text-sm">${item.label}</span>
+        `;
+        row.addEventListener('click', () => toggleItem(item.id, row));
+        itemsWrap.appendChild(row);
+      });
+
+      wrap.appendChild(section);
+    });
+
+    updateProgressBar(progressMap);
+  }
+
+  async function toggleItem(itemId, rowEl) {
+    const nowDone = !rowEl.classList.contains('done');
+    rowEl.classList.toggle('done', nowDone);
+    const check = rowEl.querySelector('.item-check');
+    check.innerHTML = nowDone ? '<span style="color:#FDFBF7;font-size:11px;">✓</span>' : '';
+
+    await supabase.from('user_progress').upsert({
+      user_id: currentUser.id,
+      item_id: itemId,
+      completed: nowDone,
+      completed_at: nowDone ? new Date().toISOString() : null
+    });
+
+    const { data: progressRows } = await supabase
+      .from('user_progress').select('item_id, completed').eq('user_id', currentUser.id);
+    const progressMap = {};
+    (progressRows || []).forEach(r => progressMap[r.item_id] = r.completed);
+    updateProgressBar(progressMap);
+    updateStageCounts(progressMap);
+  }
+
+  function updateProgressBar(progressMap) {
+    const total = allItemsFlat.length;
+    const done = allItemsFlat.filter(i => progressMap[i.id]).length;
+    const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('pctLabel').textContent = pct + '%';
+  }
+
+  function updateStageCounts(progressMap) {
+    document.querySelectorAll('#stagesWrap section').forEach(section => {
+      const rows = section.querySelectorAll('.item-row');
+      const doneCount = Array.from(rows).filter(r => r.classList.contains('done')).length;
+      const label = section.querySelector('.stage-count');
+      if (label) label.textContent = `${doneCount}/${rows.length}`;
+    });
+  }
+</script>
+
+</body>
+</html>
