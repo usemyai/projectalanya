@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Tracker Login</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { crimson: '#C11119', ink: '#0C0C0C', paper: '#FDFBF7' },
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Plus Jakarta Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }}
+  }
+</script>
+<style>
+  body{ background:#C11119; }
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#FDFBF7; opacity:0.5; }
+</style>
+</head>
+<body class="font-body text-paper antialiased min-h-screen flex flex-col">
+
+<header class="px-6 md:px-12 py-7">
+  <a href="../index.html" class="wordmark text-xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+</header>
+
+<main class="flex-1 flex items-center justify-center px-6 pb-20">
+  <div class="w-full max-w-sm">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/60 mb-3">Tracker</p>
+    <h1 class="font-display font-800 text-3xl mb-8" id="formTitle">Log in</h1>
+
+    <form id="authForm" class="space-y-4">
+      <div>
+        <label class="block font-mono text-[11px] uppercase tracking-wider text-paper/60 mb-1.5">Email</label>
+        <input type="email" id="email" required
+               class="w-full bg-transparent border-2 border-paper/40 focus:border-paper px-4 py-3 text-paper placeholder:text-paper/30 outline-none transition-colors"
+               placeholder="you@email.com">
+      </div>
+      <div>
+        <label class="block font-mono text-[11px] uppercase tracking-wider text-paper/60 mb-1.5">Password</label>
+        <input type="password" id="password" required minlength="6"
+               class="w-full bg-transparent border-2 border-paper/40 focus:border-paper px-4 py-3 text-paper placeholder:text-paper/30 outline-none transition-colors"
+               placeholder="••••••••">
+      </div>
+
+      <p id="errorMsg" class="text-sm text-paper/90 bg-ink/30 border border-paper/30 px-3 py-2 hidden"></p>
+
+      <button type="submit" id="submitBtn"
+              class="w-full bg-paper text-crimson font-mono text-xs uppercase tracking-[0.2em] px-6 py-4 hover:bg-ink hover:text-paper transition-colors">
+        Log in
+      </button>
+    </form>
+
+    <p class="mt-6 text-sm text-paper/70">
+      <span id="toggleText">Don't have an account?</span>
+      <button id="toggleMode" class="underline hover:text-paper transition-colors">Sign up</button>
+    </p>
+  </div>
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://teebttgkvyjvdhpimjui.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZWJ0dGdrdnlqdmRocGltanVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjYxMzIsImV4cCI6MjEwMzk0MjEzMn0.p8P5iEeeWjZ-NC0Ovu-jkRz0wIAgOLL1s6iHLv8V5Mc';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let mode = 'login'; // or 'signup'
+
+  const form = document.getElementById('authForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleBtn = document.getElementById('toggleMode');
+  const toggleText = document.getElementById('toggleText');
+  const formTitle = document.getElementById('formTitle');
+
+  toggleBtn.addEventListener('click', () => {
+    mode = mode === 'login' ? 'signup' : 'login';
+    formTitle.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+    submitBtn.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+    toggleText.textContent = mode === 'login' ? "Don't have an account?" : 'Already have an account?';
+    toggleBtn.textContent = mode === 'login' ? 'Sign up' : 'Log in';
+    errorMsg.classList.add('hidden');
+  });
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.remove('hidden');
+  }
+
+  // If already logged in, skip straight to onboarding/dashboard check
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) redirectAfterLogin(session.user.id);
+  });
+
+  async function redirectAfterLogin(userId) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (profile) {
+      window.location.href = 'dashboard.html';
+    } else {
+      window.location.href = 'onboarding.html';
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Please wait…';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    try {
+      if (mode === 'signup') {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        if (data.user && !data.session) {
+          showError('Check your email to confirm your account, then log in.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign up';
+          return;
+        }
+        if (data.session) redirectAfterLogin(data.user.id);
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        redirectAfterLogin(data.user.id);
+      }
+    } catch (err) {
+      showError(err.message || 'Something went wrong. Try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+    }
+  });
+</script>
+
+</body>
+</html>
