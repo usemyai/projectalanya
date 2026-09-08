@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Project Alanya Tracker</title>
+<style>
+  :root {
+    --crimson: #C41230;
+    --ink: #141414;
+    --paper: #ffffff;
+    --grey: #6b6b6b;
+    --line: #e8e2df;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .band {
+    background: var(--crimson);
+    color: var(--paper);
+    padding: 48px 24px 40px;
+  }
+  .band .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin: 0 0 12px;
+  }
+  .band h1 {
+    font-size: 32px;
+    line-height: 1.15;
+    margin: 0;
+    max-width: 480px;
+  }
+  main {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  p.lead {
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0 0 28px;
+  }
+  label {
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+  input:focus { outline: 2px solid var(--crimson); outline-offset: 1px; }
+  button {
+    width: 100%;
+    padding: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--crimson);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  button:disabled { background: #d98a97; cursor: not-allowed; }
+  .status {
+    margin-top: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.error { color: var(--crimson); }
+  .status.success { color: #1a7a3c; }
+  .hint {
+    margin-top: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <p class="kicker">PROJECT ALANYA</p>
+  <h1>Sign in to your Relocation Tracker</h1>
+</div>
+
+<main>
+  <p class="lead">Enter your email and we'll send you a link to sign in — no password needed. First time here? This creates your free account.</p>
+
+  <form id="signinForm">
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+    <button type="submit" id="submitBtn">Send me a sign-in link</button>
+    <div class="status" id="status"></div>
+  </form>
+
+  <p class="hint">The tracker's first stage (Property) is free to try. All four stages unlock for a one-time £6.99 payment.</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://teebttgkvyjvdhpimjui.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZWJ0dGdrdnlqdmRocGltanVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjYxMzIsImV4cCI6MjEwMzk0MjEzMn0.p8P5iEeeWjZ-NC0Ovu-jkRz0wIAgOLL1s6iHLv8V5Mc";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const form = document.getElementById('signinForm');
+  const statusEl = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+
+    statusEl.className = 'status';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin + '/tracker.html'
+      }
+    });
+
+    if (error) {
+      statusEl.className = 'status show error';
+      statusEl.textContent = 'Something went wrong: ' + error.message;
+    } else {
+      statusEl.className = 'status show success';
+      statusEl.textContent = 'Check your email for a link to sign in.';
+      form.reset();
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send me a sign-in link';
+  });
+</script>
+
+</body>
+</html>

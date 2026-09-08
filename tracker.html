@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Relocation Tracker — Project Alanya</title>
+<style>
+  :root {
+    --crimson: #C41230;
+    --ink: #141414;
+    --paper: #ffffff;
+    --grey: #6b6b6b;
+    --line: #e8e2df;
+    --lock-bg: #f5f2f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .band {
+    background: var(--crimson);
+    color: var(--paper);
+    padding: 40px 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .band .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    margin: 0 0 12px;
+  }
+  .band h1 {
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 0;
+    max-width: 420px;
+  }
+  .signout {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.5);
+    color: var(--paper);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  main {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  #loading, #signedOutMsg {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--grey);
+    text-align: center;
+    padding: 60px 20px;
+  }
+  #signedOutMsg a { color: var(--crimson); }
+  .stage-card {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .stage-card.locked {
+    background: var(--lock-bg);
+  }
+  .stage-checkbox {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--crimson);
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  .stage-body { flex: 1; }
+  .stage-title {
+    font-size: 19px;
+    font-weight: bold;
+    margin: 0 0 4px;
+  }
+  .stage-title.done { text-decoration: line-through; color: var(--grey); }
+  .stage-desc {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: var(--grey);
+    margin: 0;
+  }
+  .lock-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .upgrade-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 3px;
+    padding: 28px 24px;
+    text-align: center;
+    margin-top: 24px;
+  }
+  .upgrade-box h2 {
+    font-size: 22px;
+    margin: 0 0 10px;
+  }
+  .upgrade-box p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #cfcfcf;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+  .upgrade-box a.btn {
+    display: inline-block;
+    background: var(--crimson);
+    color: var(--paper);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 2px;
+    text-decoration: none;
+  }
+  .paid-refresh {
+    text-align: center;
+    margin-top: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--grey);
+  }
+  .paid-refresh button {
+    background: none;
+    border: none;
+    color: var(--crimson);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div>
+    <p class="kicker">PROJECT ALANYA</p>
+    <h1>Your Relocation Tracker</h1>
+  </div>
+  <button class="signout" id="signOutBtn">Sign out</button>
+</div>
+
+<main>
+  <div id="loading">Loading your tracker...</div>
+  <div id="signedOutMsg" style="display:none;">
+    You're not signed in. <a href="/signin.html">Sign in here</a>.
+  </div>
+  <div id="trackerContent" style="display:none;"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://teebttgkvyjvdhpimjui.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlZWJ0dGdrdnlqdmRocGltanVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjYxMzIsImV4cCI6MjEwMzk0MjEzMn0.p8P5iEeeWjZ-NC0Ovu-jkRz0wIAgOLL1s6iHLv8V5Mc";
+  const PAYHIP_URL = "https://payhip.com/b/zMV3C";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const STAGES = [
+    { key: "owns_property", title: "Property", desc: "Find and secure your place in Alanya.", free: true },
+    { key: "has_bank_account", title: "Banking", desc: "Open a Turkish bank account.", free: false },
+    { key: "started_ikamet", title: "Ikamet", desc: "Start your residence permit application.", free: false },
+    { key: "arranged_moving", title: "Moving day", desc: "Arrange shipping and your move date.", free: false },
+  ];
+
+  const loadingEl = document.getElementById('loading');
+  const signedOutEl = document.getElementById('signedOutMsg');
+  const contentEl = document.getElementById('trackerContent');
+
+  async function init() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+      loadingEl.style.display = 'none';
+      signedOutEl.style.display = 'block';
+      return;
+    }
+
+    const userId = session.user.id;
+
+    // Fetch their profile row. The signup trigger should have created it already;
+    // if it's not there yet (rare timing edge case), create a fallback row.
+    let { data: profile, error } = await supabaseClient
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) {
+      const { data: created } = await supabaseClient
+        .from('profiles')
+        .upsert({ id: userId, paid: false })
+        .select()
+        .single();
+      profile = created;
+    }
+
+    renderTracker(profile);
+  }
+
+  function renderTracker(profile) {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    contentEl.innerHTML = '';
+
+    STAGES.forEach(stage => {
+      const unlocked = stage.free || profile.paid;
+      const done = !!profile[stage.key];
+
+      const card = document.createElement('div');
+      card.className = 'stage-card' + (unlocked ? '' : ' locked');
+
+      if (unlocked) {
+        card.innerHTML = `
+          <input type="checkbox" class="stage-checkbox" data-key="${stage.key}" ${done ? 'checked' : ''}>
+          <div class="stage-body">
+            <p class="stage-title ${done ? 'done' : ''}">${stage.title}</p>
+            <p class="stage-desc">${stage.desc}</p>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <span class="lock-icon">🔒</span>
+          <div class="stage-body">
+            <p class="stage-title">${stage.title}</p>
+            <p class="stage-desc">${stage.desc}</p>
+          </div>
+        `;
+      }
+      contentEl.appendChild(card);
+    });
+
+    if (!profile.paid) {
+      const upgrade = document.createElement('div');
+      upgrade.className = 'upgrade-box';
+      upgrade.innerHTML = `
+        <h2>Unlock all 4 stages</h2>
+        <p>One-time payment of £6.99 unlocks Banking, Ikamet and Moving day — lifetime access, no subscription.</p>
+        <a class="btn" href="${PAYHIP_URL}" target="_blank">Unlock for £6.99</a>
+        <div class="paid-refresh">Already paid? <button id="refreshBtn">Refresh status</button></div>
+      `;
+      contentEl.appendChild(upgrade);
+      document.getElementById('refreshBtn').addEventListener('click', init);
+    }
+
+    // Wire up checkboxes to save progress live.
+    contentEl.querySelectorAll('.stage-checkbox').forEach(box => {
+      box.addEventListener('change', async (e) => {
+        const key = e.target.dataset.key;
+        const value = e.target.checked;
+        await supabaseClient
+          .from('profiles')
+          .update({ [key]: value })
+          .eq('id', profile.id);
+        profile[key] = value;
+        const titleEl = e.target.closest('.stage-card').querySelector('.stage-title');
+        titleEl.classList.toggle('done', value);
+      });
+    });
+  }
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = '/signin.html';
+  });
+
+  init();
+</script>
+
+</body>
+</html>
