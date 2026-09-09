@@ -180,6 +180,29 @@
     color: #333;
     margin: 0;
   }
+  .guide-links {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .guide-links-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--grey);
+    margin: 0 0 8px;
+  }
+  .guide-link {
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--crimson);
+    text-decoration: none;
+    margin-bottom: 6px;
+  }
+  .guide-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -230,9 +253,36 @@
           heading: "Watch out for",
           body: "Verbal promises about included furniture or repairs mean nothing once you've paid — get anything agreed in writing, added as a clause, before handing over money."
         }
+      ],
+      links: [
+        { label: "e-ikamet.goc.gov.tr — official residence permit portal", url: "https://e-ikamet.goc.gov.tr" },
+        { label: "tkgm.gov.tr — official Land Registry & Cadastre", url: "https://www.tkgm.gov.tr" }
       ]
     },
-    { key: "has_bank_account", title: "Banking", desc: "Open a Turkish bank account.", free: false },
+    { key: "has_bank_account", title: "Banking", desc: "Open a Turkish bank account.", free: false,
+      guide: [
+        {
+          heading: "Get your tax number first",
+          body: "Before any bank will open an account, you need a Turkish Tax Identification Number (Vergi Numarası). It's free and quick — apply in person at the local tax office (Vergi Dairesi) with just your passport, or through Turkey's official Digital Tax Office site."
+        },
+        {
+          heading: "Which bank to actually use",
+          body: "Garanti BBVA is a solid, genuine recommendation — not just a personal habit. It's consistently one of the few major Turkish banks with proper English-language mobile banking and English-speaking staff in key branches, which matters far more day-to-day than people expect."
+        },
+        {
+          heading: "What to bring",
+          body: "Passport, your tax number, and proof of address — your signed rental contract from the Property stage covers this. Some branches also ask for a Turkish phone number, so sort your SIM before this appointment if you can."
+        },
+        {
+          heading: "Watch out for",
+          body: "Requirements can vary noticeably branch to branch, even within the same bank. If one branch tells you something's not possible, it's worth trying a second branch before assuming it's a hard rule."
+        }
+      ],
+      links: [
+        { label: "Garanti BBVA — official site", url: "https://www.garantibbva.com.tr" },
+        { label: "GIB — Turkish Revenue Administration (tax number applications)", url: "https://www.gib.gov.tr" }
+      ]
+    },
     { key: "started_ikamet", title: "Ikamet", desc: "Start your residence permit application.", free: false },
     { key: "arranged_moving", title: "Moving day", desc: "Arrange shipping and your move date.", free: false },
   ];
@@ -294,6 +344,12 @@
                 <p class="guide-body">${item.body}</p>
               </div>
             `).join('')}
+            ${stage.links ? `
+              <div class="guide-links">
+                <p class="guide-links-label">Official resources</p>
+                ${stage.links.map(link => `<a class="guide-link" href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`).join('')}
+              </div>
+            ` : ''}
           </div>
         ` : '';
         card.innerHTML = `
