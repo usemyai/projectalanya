@@ -283,8 +283,54 @@
         { label: "GIB — Turkish Revenue Administration (tax number applications)", url: "https://www.gib.gov.tr" }
       ]
     },
-    { key: "started_ikamet", title: "Ikamet", desc: "Start your residence permit application.", free: false },
-    { key: "arranged_moving", title: "Moving day", desc: "Arrange shipping and your move date.", free: false },
+    { key: "started_ikamet", title: "Ikamet", desc: "Start your residence permit application.", free: false,
+      guide: [
+        {
+          heading: "Timing matters more than anything else",
+          body: "You can only apply once you've physically entered Turkey, and you must submit your application before your visa-free entry stamp or visa expires — not after. There's no grace period, so mark the expiry date the moment you land."
+        },
+        {
+          heading: "The actual process",
+          body: "Everything starts online at e-ikamet.goc.gov.tr, where you fill in your details and get given an appointment date at your local Migration Directorate (Göç İdaresi) office — for Alanya, that's the Antalya provincial office. The appointment itself is usually short; the paperwork beforehand is where most of the real work happens."
+        },
+        {
+          heading: "What you'll need at the appointment",
+          body: "Your passport, four recent biometric photos (white background), a valid Turkish health insurance policy, proof of address (your signed rental contract from the Property stage), and proof you can financially support yourself — a bank statement is usually enough."
+        },
+        {
+          heading: "Watch out for",
+          body: "Your passport needs at least 60 days of validity left beyond your requested residence permit end date, or the application gets rejected outright. Check this before you book anything, not after."
+        }
+      ],
+      links: [
+        { label: "e-ikamet.goc.gov.tr — official application portal", url: "https://e-ikamet.goc.gov.tr" },
+        { label: "goc.gov.tr — Directorate General of Migration Management", url: "https://www.goc.gov.tr" }
+      ]
+    },
+    { key: "arranged_moving", title: "Moving day", desc: "Arrange shipping and your move date.", free: false,
+      guide: [
+        {
+          heading: "This stage genuinely comes last",
+          body: "Turkey's duty-free import allowance for household goods only applies once you hold a valid residence permit — so getting your ikamet sorted first isn't just a suggestion, it's what actually unlocks this benefit."
+        },
+        {
+          heading: "The six-month clock",
+          body: "You must declare your shipped household goods to Turkish customs within six months of your first entry, or you lose the duty-free exemption entirely. Start this conversation with a shipping company as soon as your ikamet is confirmed, not once your boxes are already packed."
+        },
+        {
+          heading: "Sea vs air freight",
+          body: "Sea freight is far cheaper for furniture and household goods but takes weeks, not days — plan for that gap and budget for temporary essentials on arrival. Air freight suits a small, urgent shipment, not a full house move."
+        },
+        {
+          heading: "What you'll need for customs",
+          body: "A full itemised inventory of what's being shipped (serial numbers for electronics), proof of your Turkish address, and your residence permit. You're not allowed to sell any of these duty-free imported items to anyone in Turkey afterwards — that voids the exemption and can trigger the duty retroactively."
+        }
+      ],
+      links: [
+        { label: "ticaret.gov.tr — Ministry of Trade (customs authority)", url: "https://ticaret.gov.tr" },
+        { label: "trade.gov.tr — English-language customs information", url: "https://www.trade.gov.tr" }
+      ]
+    },
   ];
 
   const loadingEl = document.getElementById('loading');
