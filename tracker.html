@@ -147,6 +147,39 @@
     font-size: 13px;
     font-family: inherit;
   }
+  .guide-toggle {
+    background: none;
+    border: none;
+    color: var(--crimson);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 10px;
+  }
+  .guide-content {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: none;
+  }
+  .guide-content.open { display: block; }
+  .guide-item { margin-bottom: 16px; }
+  .guide-item:last-child { margin-bottom: 0; }
+  .guide-heading {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 0 4px;
+  }
+  .guide-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #333;
+    margin: 0;
+  }
 </style>
 </head>
 <body>
@@ -175,7 +208,30 @@
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const STAGES = [
-    { key: "owns_property", title: "Property", desc: "Find and secure your place in Alanya.", free: true },
+    {
+      key: "owns_property",
+      title: "Property",
+      desc: "Find and secure your place in Alanya.",
+      free: true,
+      guide: [
+        {
+          heading: "How renting actually works here",
+          body: "Most listings run through a local emlakçı (estate agent) rather than sites like Airbnb once you're past the first month or two. Agents typically charge one month's rent as commission, paid once, at signing — not monthly."
+        },
+        {
+          heading: "Before you sign anything",
+          body: "Ask for the kira sözleşmesi (rental contract) in Turkish, even if you're given an English summary — the Turkish version is the one that legally counts. Confirm whether bills (aidat, the building maintenance fee) are included or separate, since this varies block to block."
+        },
+        {
+          heading: "Where eligibility matters",
+          body: "Not every district qualifies for a first-time ikamet application — some areas have hit their foreign-resident quota. Check the Districts page on this site before you commit to a specific neighbourhood, not after."
+        },
+        {
+          heading: "Watch out for",
+          body: "Verbal promises about included furniture or repairs mean nothing once you've paid — get anything agreed in writing, added as a clause, before handing over money."
+        }
+      ]
+    },
     { key: "has_bank_account", title: "Banking", desc: "Open a Turkish bank account.", free: false },
     { key: "started_ikamet", title: "Ikamet", desc: "Start your residence permit application.", free: false },
     { key: "arranged_moving", title: "Moving day", desc: "Arrange shipping and your move date.", free: false },
@@ -229,11 +285,23 @@
       card.className = 'stage-card' + (unlocked ? '' : ' locked');
 
       if (unlocked) {
+        const guideHtml = stage.guide ? `
+          <button class="guide-toggle" data-toggle="${stage.key}">Show guide ▾</button>
+          <div class="guide-content" id="guide-${stage.key}">
+            ${stage.guide.map(item => `
+              <div class="guide-item">
+                <p class="guide-heading">${item.heading}</p>
+                <p class="guide-body">${item.body}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
         card.innerHTML = `
           <input type="checkbox" class="stage-checkbox" data-key="${stage.key}" ${done ? 'checked' : ''}>
           <div class="stage-body">
             <p class="stage-title ${done ? 'done' : ''}">${stage.title}</p>
             <p class="stage-desc">${stage.desc}</p>
+            ${guideHtml}
           </div>
         `;
       } else {
@@ -273,6 +341,16 @@
         profile[key] = value;
         const titleEl = e.target.closest('.stage-card').querySelector('.stage-title');
         titleEl.classList.toggle('done', value);
+      });
+    });
+
+    // Wire up "Show guide" toggles.
+    contentEl.querySelectorAll('.guide-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.toggle;
+        const guideEl = document.getElementById(`guide-${key}`);
+        const isOpen = guideEl.classList.toggle('open');
+        btn.textContent = isOpen ? 'Hide guide ▴' : 'Show guide ▾';
       });
     });
   }
