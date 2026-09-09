@@ -147,6 +147,63 @@
     font-size: 13px;
     font-family: inherit;
   }
+  .complete-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 3px;
+    padding: 28px 24px;
+    margin-top: 24px;
+  }
+  .complete-box h2 {
+    font-size: 22px;
+    margin: 0 0 10px;
+    text-align: center;
+  }
+  .complete-box > p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #cfcfcf;
+    margin: 0 0 24px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .bonus-item {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+  .bonus-heading {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 6px;
+  }
+  .bonus-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #cfcfcf;
+    margin: 0 0 10px;
+  }
+  .bonus-link {
+    display: inline-block;
+    background: var(--crimson);
+    color: var(--paper);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 2px;
+    text-decoration: none;
+    margin-bottom: 8px;
+  }
+  .bonus-disclosure {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: #999;
+    margin: 0;
+  }
+  .guide-affiliate .bonus-disclosure { color: var(--grey); }
   .guide-toggle {
     background: none;
     border: none;
@@ -278,6 +335,13 @@
           body: "Requirements can vary noticeably branch to branch, even within the same bank. If one branch tells you something's not possible, it's worth trying a second branch before assuming it's a hard rule."
         }
       ],
+      affiliate: {
+        heading: "Keeping access to home banking and streaming",
+        body: "Some UK banking apps flag or block foreign logins once you're abroad, and streaming libraries change by country. A VPN keeps your connection looking like it's coming from home for both. We use and recommend NordVPN for this.",
+        linkLabel: "Get NordVPN →",
+        linkUrl: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=155846",
+        disclosure: "This is an affiliate link — using it may earn Project Alanya a small commission at no extra cost to you."
+      },
       links: [
         { label: "Garanti BBVA — official site", url: "https://www.garantibbva.com.tr" },
         { label: "GIB — Turkish Revenue Administration (tax number applications)", url: "https://www.gib.gov.tr" }
@@ -390,6 +454,14 @@
                 <p class="guide-body">${item.body}</p>
               </div>
             `).join('')}
+            ${stage.affiliate ? `
+              <div class="guide-item guide-affiliate">
+                <p class="guide-heading">${stage.affiliate.heading}</p>
+                <p class="guide-body">${stage.affiliate.body}</p>
+                <a class="bonus-link" href="${stage.affiliate.linkUrl}" target="_blank" rel="noopener">${stage.affiliate.linkLabel}</a>
+                <p class="bonus-disclosure">${stage.affiliate.disclosure}</p>
+              </div>
+            ` : ''}
             ${stage.links ? `
               <div class="guide-links">
                 <p class="guide-links-label">Official resources</p>
@@ -429,6 +501,21 @@
       `;
       contentEl.appendChild(upgrade);
       document.getElementById('refreshBtn').addEventListener('click', init);
+    } else {
+      const allDone = STAGES.every(s => profile[s.key]);
+      if (allDone) {
+        const complete = document.createElement('div');
+        complete.className = 'complete-box';
+        complete.innerHTML = `
+          <h2>You're ready to move to Alanya 🎉</h2>
+          <p>Property, banking, ikamet and moving day — all sorted. One last thing worth knowing before you land.</p>
+          <div class="bonus-item">
+            <p class="bonus-heading">Hiring a car</p>
+            <p class="bonus-body">A UK or EU driving licence is valid in Turkey for short stays, but check the current validity period before relying on it long-term. Book through an internationally recognised company with an Alanya or Antalya airport branch (Europcar, Sixt and local firms all operate here) — always photograph the car together with the agent before driving off, since dispute-over-damage complaints are a common tourist-rate scam.</p>
+          </div>
+        `;
+        contentEl.appendChild(complete);
+      }
     }
 
     // Wire up checkboxes to save progress live.
