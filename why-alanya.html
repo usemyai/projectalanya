@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projectalanya — Why Alanya, and the questions people actually ask</title>
+<meta name="description" content="Why Alanya over Antalya or Bodrum, whether this is an agency, how accurate the district data is — the real questions, answered plainly.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { crimson: '#C11119', 'crimson-deep': '#8F0C12', ink: '#0C0C0C', paper: '#FDFBF7' },
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Plus Jakarta Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }}
+  }
+</script>
+
+<style>
+  html{ scroll-behavior:smooth; overflow-x:hidden; }
+  body{ background:#C11119; overflow-x:hidden; }
+  ::selection{ background:#0C0C0C; color:#FDFBF7; }
+
+  .bleed-text{
+    font-family:'Syne', sans-serif;
+    font-weight:800;
+    line-height:0.82;
+    letter-spacing:-0.02em;
+    color:#FDFBF7;
+    word-break: break-word;
+  }
+  .rule{ border-color: rgba(253,251,247,0.25); }
+  .wordmark{ font-family:'Syne', sans-serif; font-weight:700; letter-spacing:-0.03em; text-transform:lowercase; }
+  .wordmark .dot{ color:#FDFBF7; opacity:0.5; }
+
+  .faq-item{ cursor:pointer; }
+  .faq-answer{ max-height:0; overflow:hidden; transition:max-height 0.35s ease; }
+  .faq-item.open .faq-answer{ max-height:400px; }
+  .faq-icon{ transition:transform 0.3s ease; }
+  .faq-item.open .faq-icon{ transform:rotate(45deg); }
+
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:#8F0C12; }
+  ::-webkit-scrollbar-thumb{ background:#FDFBF7; border-radius:10px; }
+</style>
+</head>
+
+<body class="font-body text-paper antialiased">
+
+<header class="sticky top-0 z-40 bg-crimson">
+  <nav class="flex items-center justify-between px-6 md:px-12 py-7">
+    <a href="index.html" class="wordmark text-xl md:text-2xl hover:opacity-80 transition-opacity">project<span class="dot">·</span>alanya</a>
+    <div class="hidden md:flex items-center gap-10 text-sm font-medium">
+      <a href="index.html#dashboard" class="hover:opacity-70 transition-opacity">Budget</a>
+      <a href="index.html#ground-truth" class="hover:opacity-70 transition-opacity">Ground Truth</a>
+      <a href="neighbourhoods.html" class="hover:opacity-70 transition-opacity">Districts</a>
+      <a href="tracker/index.html" class="hover:opacity-70 transition-opacity">Tracker</a>
+      <a href="why-alanya.html" class="opacity-100 font-semibold">Why Alanya</a>
+    </div>
+    <button id="menuBtn" onclick="toggleMenu()" class="md:hidden relative z-50 w-8 h-8 flex flex-col justify-center items-end gap-[6px]" aria-label="Open menu">
+      <span id="bar1" class="block h-[2px] w-8 bg-paper transition-all duration-300"></span>
+      <span id="bar2" class="block h-[2px] w-6 bg-paper transition-all duration-300"></span>
+    </button>
+  </nav>
+
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-ink md:hidden flex flex-col justify-center items-start px-8 gap-5 opacity-0 pointer-events-none transition-opacity duration-300">
+    <a href="index.html#dashboard" class="font-display text-[9vw] leading-none text-paper break-words">Budget</a>
+    <a href="index.html#ground-truth" class="font-display text-[9vw] leading-none text-paper break-words">Ground Truth</a>
+    <a href="neighbourhoods.html" class="font-display text-[9vw] leading-none text-paper break-words">Districts</a>
+    <a href="tracker/index.html" class="font-display text-[9vw] leading-none text-paper break-words">Tracker</a>
+    <a href="why-alanya.html" onclick="toggleMenu()" class="font-display text-[9vw] leading-none text-crimson break-words">Why Alanya</a>
+  </div>
+</header>
+
+<script>
+  let menuOpen = false;
+  function toggleMenu(){
+    const menu = document.getElementById('mobileMenu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    menuOpen = !menuOpen;
+    if(menuOpen){
+      menu.classList.remove('opacity-0','pointer-events-none');
+      menu.classList.add('opacity-100');
+      bar1.style.transform = 'rotate(45deg) translate(1px,1px)';
+      bar2.style.transform = 'rotate(-45deg) translate(1px,-1px)';
+      bar2.style.width = '2rem';
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.add('opacity-0','pointer-events-none');
+      menu.classList.remove('opacity-100');
+      bar1.style.transform = '';
+      bar2.style.transform = '';
+      bar2.style.width = '';
+      document.body.style.overflow = '';
+    }
+  }
+</script>
+
+<!-- HERO -->
+<section class="relative px-6 md:px-12 pt-6 pb-16 overflow-hidden">
+  <div class="max-w-[1400px] mx-auto">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/70 mb-6">Before the how, the why</p>
+    <h1 class="bleed-text text-[13vw] md:text-[7.5vw] select-none">WHY ALANYA,</h1>
+    <h1 class="bleed-text text-[13vw] md:text-[7.5vw] -mt-[2vw] md:-mt-[1.5vw] ml-0 md:ml-[8vw] select-none">NOT SOMEWHERE ELSE</h1>
+    <p class="mt-8 md:ml-[8vw] max-w-xl text-lg font-light leading-relaxed text-paper/90">
+      Antalya's bigger. Bodrum's flashier. Istanbul's the obvious answer if
+      you say "Turkey" to most people. Here's the honest case for Alanya
+      specifically — and the questions people actually ask before they
+      believe it.
+    </p>
+  </div>
+</section>
+
+<!-- WHY ALANYA -->
+<section class="px-6 md:px-12 py-16 border-t rule bg-paper text-ink">
+  <div class="max-w-2xl mx-auto space-y-10">
+    <div>
+      <h2 class="font-display font-800 text-2xl mb-3">Genuine Muslim community, not just a Muslim-majority country</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Turkey overall is Muslim-majority, but that alone doesn't tell you
+        what daily life feels like somewhere. Alanya's older, more
+        residential districts — away from the resort strip — carry a real
+        local rhythm: mosques that are genuinely used, not just present.
+        That's a different thing from a country being statistically Muslim.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-display font-800 text-2xl mb-3">Cheaper than Bodrum, less overwhelming than Istanbul</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Bodrum trades on being the upscale option — prices reflect that.
+        Istanbul is a genuine megacity, 15+ million people, which suits
+        some people and exhausts others. Alanya sits in a real middle
+        ground: coastal, established expat and property infrastructure,
+        without either Bodrum's price tag or Istanbul's scale.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-display font-800 text-2xl mb-3">A well-worn path for property, not a gamble</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Alanya has one of Turkey's most established foreign-buyer property
+        markets — real infrastructure around it: agencies, TAPU processes,
+        SPK valuers, all genuinely used to overseas buyers. That maturity
+        matters when you're the one signing the paperwork.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-display font-800 text-2xl mb-3">The honest trade-off, stated plainly</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Alanya is also genuinely touristy in parts, and several of its
+        biggest districts (Mahmutlar, Kargıcak, Avsallar) are currently
+        closed to new residency registrations specifically because of how
+        popular they've become with foreigners. That's not a hidden flaw —
+        it's exactly why this site tracks district-by-district status
+        rather than pretending everywhere's equally open.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="px-6 md:px-12 py-16 border-t rule">
+  <div class="max-w-2xl mx-auto">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-paper/60 mb-3">Questions people actually ask</p>
+    <h2 class="font-display font-800 text-3xl mb-10">FAQ</h2>
+
+    <div class="space-y-0 divide-y divide-paper/20" id="faqList"></div>
+  </div>
+</section>
+
+<footer class="px-6 md:px-12 py-8 border-t rule flex flex-col md:flex-row justify-between gap-3 font-mono text-[11px] text-paper/50">
+  <span>© 2026 projectalanya. All rights reserved. <a href="mailto:hello@projectalanya.com" class="text-paper/70 hover:text-paper underline underline-offset-2">hello@projectalanya.com</a></span>
+  <span>Not a relocation agency. Verify residency, tax and currency details independently before acting on them.</span>
+</footer>
+
+<script>
+  const faqs = [
+    {
+      q: "Are you a relocation agency?",
+      a: "No. This is one person's real, documented move — the site shares what's actually been researched and lived, not a paid advisory service. Every page says so plainly, including this one."
+    },
+    {
+      q: "How accurate is the district ikamet status data?",
+      a: "It's accurate as of when it was last checked and verified directly against e-ikamet.goc.gov.tr — but district status can change without public notice. Always confirm current status yourself before acting on it. This is stated deliberately, not as a disclaimer afterthought."
+    },
+    {
+      q: "Why Alanya and not Antalya or Bodrum?",
+      a: "Antalya's the wider province Alanya sits within — bigger, more corporate, less specifically residential in feel. Bodrum is priced for a different market. Alanya offers an established, more affordable middle ground with genuine community texture, not just tourist infrastructure."
+    },
+    {
+      q: "Do I need to already own property to use the tracker?",
+      a: "No — the tracker is built for whatever stage you're actually at. If you already own property or have a bank account, tell it so during onboarding and it skips those stages entirely, showing you only what's genuinely left."
+    },
+    {
+      q: "Is the ikamet process the same for everyone?",
+      a: "The core process is standardised, but district eligibility, required documents, and your specific route (property-based vs short-term) can vary. The free Ikamet Roadmap guide covers the general process; always verify current requirements directly."
+    },
+    {
+      q: "Why does the site mention affiliate links?",
+      a: "Some links (flights, car hire, VPN) earn a small commission if you book through them, at no extra cost to you. This is disclosed because trust matters more here than hiding it — the recommendations are made honestly regardless."
+    }
+  ];
+
+  const list = document.getElementById('faqList');
+  faqs.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'faq-item py-5';
+    el.innerHTML = `
+      <div class="flex items-center justify-between gap-4">
+        <h3 class="font-display font-700 text-lg">${item.q}</h3>
+        <span class="faq-icon font-display font-800 text-2xl shrink-0">+</span>
+      </div>
+      <div class="faq-answer">
+        <p class="text-paper/75 leading-relaxed mt-4 max-w-xl">${item.a}</p>
+      </div>
+    `;
+    el.addEventListener('click', () => el.classList.toggle('open'));
+    list.appendChild(el);
+  });
+</script>
+
+</body>
+</html>
